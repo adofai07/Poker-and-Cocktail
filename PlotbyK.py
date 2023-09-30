@@ -6,7 +6,7 @@ import numpy as np
 def f(x):
     # print(type(x))
     # print(len(x))
-    return x
+    return np.log(x)
 
 def egf(x):
     ret = list()
@@ -20,8 +20,8 @@ def opsgf(x):
     ret = list()
 
     for i in tqdm.trange(len(x)):
-        # ret.append(DoublePrecisionOrdinaryPowerSeriesGeneratingFunctionOfStoppingTime(x[i], K=3, iters=50))
-        ret.append(np.inf)
+        ret.append(DoublePrecisionOrdinaryPowerSeriesGeneratingFunctionOfStoppingTime(x[i], K=3, iters=50))
+        # ret.append(np.nan)
     
     return np.array(ret)
 

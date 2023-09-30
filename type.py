@@ -110,7 +110,7 @@ def DecimalPrecisionOrdinaryPowerSeriesGeneratingFunctionOfStoppingTime(x: Decim
             break
 
     if ret.norm() > threshold:
-        return DecimalComplex(D(1.79e308), D(1.79e308))
+        return np.nan
 
     return ret
 
@@ -120,10 +120,14 @@ def DoublePrecisionExponentialGeneratingFunctionOfStoppingTime(x: complex, K: in
     return float(res.real) + float(res.imag) * 1j
 
 def DoublePrecisionOrdinaryPowerSeriesGeneratingFunctionOfStoppingTime(x: complex, K: int, iters=300) -> complex:
-    res = DecimalPrecisionExponentialGeneratingFunctionOfStoppingTime(DecimalComplex(D(x.real), D(x.imag)), K, iters)
+    res = DecimalPrecisionOrdinaryPowerSeriesGeneratingFunctionOfStoppingTime(DecimalComplex(D(x.real), D(x.imag)), K, iters)
+
+    if res == np.nan:
+        return np.nan
 
     return float(res.real) + float(res.imag) * 1j
 
 if __name__ == "__main__":
-    print(DecimalPrecisionExponentialGeneratingFunctionOfStoppingTime(x=DecimalComplex(D("0.01"), D("0")), K=3))
-    print(DoublePrecisionExponentialGeneratingFunctionOfStoppingTime(0.01 + 0j, 3))
+    a = D(10 ** 1000)
+
+    print(float(a))
