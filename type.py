@@ -47,6 +47,9 @@ class DecimalComplex:
     def __str__(self):
         return F"{self.real} + {self.imag}i"
 
+def complexinfty():
+    return DecimalComplex(D("Infinity"), D("Infinity"))
+
 @functools.cache
 def fact(x: int) -> int:
     if x == 0: return 1
@@ -110,9 +113,45 @@ def DecimalPrecisionOrdinaryPowerSeriesGeneratingFunctionOfStoppingTime(x: Decim
             break
 
     if ret.norm() > threshold:
-        return np.nan
+        return complexinfty()
 
     return ret
+
+def opsgf_funceq(x : DecimalComplex, K: int, iters=300, depth=0, maxdepth=10) -> DecimalComplex:
+    new_k = DecimalComplex(D(K), D(0))
+    new_kp1 = DecimalComplex(D(K + 1), D(0))
+    new_km1 = DecimalComplex(D(K - 1), D(0))
+
+    return opsgf_funceq_internal(x, new_k, new_kp1, new_km1, iters, depth, maxdepth)
+
+def opsgf_funceq_internal(x : DecimalComplex, K: DecimalComplex, kp1 : DecimalComplex, km1 : DecimalComplex, iters=300, depth=0, maxdepth=10) -> DecimalComplex:
+    threshold = D(1.79e308)
+
+    if x.norm() < 1:
+        return DecimalPrecisionOrdinaryPowerSeriesGeneratingFunctionOfStoppingTime(x, int(K.real), iters)
+    
+    
+    if depth > maxdepth:
+        return complexinfty()
+    else:
+        try:
+            recur_1 = opsgf_funceq_internal(km1 * x * kp1.reciprocal(), K, kp1, km1, iters, depth + 1, maxdepth)
+            if recur_1.norm() > threshold:
+                return complexinfty()
+            recur_2 = opsgf_funceq_internal(x * (kp1 - km1 * x).reciprocal(), K, kp1, km1, iters, depth + 1, maxdepth)
+            recur_2 *= DecimalComplex(D(2), D(0)) * K * kp1.reciprocal()
+
+            const_term = DecimalComplex(D(4), D(0)) * K * (x ** 2) * kp1.reciprocal() * (kp1 - DecimalComplex(D(2), D(0)) * K * x).reciprocal()
+
+            return recur_1 + recur_2 + const_term
+        except:
+            return complexinfty()
+    
+def opsgf_funceq_wrap(x: complex, K: int, iters=300) -> complex:
+    res = opsgf_funceq(DecimalComplex(D(x.real), D(x.imag)), K, iters)
+
+    return float(res.real) + float(res.imag) * 1j
+
 
 def DoublePrecisionExponentialGeneratingFunctionOfStoppingTime(x: complex, K: int, iters=300) -> complex:
     res = DecimalPrecisionExponentialGeneratingFunctionOfStoppingTime(DecimalComplex(D(x.real), D(x.imag)), K, iters)
@@ -128,6 +167,6 @@ def DoublePrecisionOrdinaryPowerSeriesGeneratingFunctionOfStoppingTime(x: comple
     return float(res.real) + float(res.imag) * 1j
 
 if __name__ == "__main__":
-    a = D(10 ** 1000)
+    comp = DecimalComplex(D(-1.0), D(-0.5))
 
-    print(float(a))
+    print(opsgf_funceq(comp, 5))

@@ -1,4 +1,5 @@
-from type import DoublePrecisionExponentialGeneratingFunctionOfStoppingTime, DoublePrecisionOrdinaryPowerSeriesGeneratingFunctionOfStoppingTime
+from type import DoublePrecisionExponentialGeneratingFunctionOfStoppingTime, DoublePrecisionOrdinaryPowerSeriesGeneratingFunctionOfStoppingTime, opsgf_funceq_wrap
+
 import cplot
 import tqdm
 import numpy as np
@@ -20,7 +21,7 @@ def opsgf(x):
     ret = list()
 
     for i in tqdm.trange(len(x)):
-        ret.append(DoublePrecisionOrdinaryPowerSeriesGeneratingFunctionOfStoppingTime(x[i], K=3, iters=50))
+        ret.append(opsgf_funceq_wrap(x[i], K=3, iters=50))
         # ret.append(np.nan)
     
     return np.array(ret)
